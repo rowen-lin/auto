@@ -43,9 +43,24 @@ class Page(object):
             return False
         return True
 
+    def scroll_into_view(self, locator):
+        try:
+            element = self.get_element_by(locator)
+            self.driver.execute_script("arguments[0].scrollIntoView();", element)
+        except (NoSuchElementException, TimeoutException):
+            raise
+        return element
+
     def get_current_url(self, timeout=10):
         try:
             current_url = self.driver.current_url
         except TimeoutException:
             raise
         return current_url
+
+    def get_meta_title(self):
+        try:
+            meta_title = self.driver.title
+        except TimeoutException:
+            raise
+        return meta_title
