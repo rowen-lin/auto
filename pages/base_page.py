@@ -46,7 +46,7 @@ class Page(object):
     def scroll_into_view(self, locator):
         try:
             element = self.get_element_by(locator)
-            self.driver.execute_script("arguments[0].scrollIntoView();", element)
+            self.driver.execute_script("arguments[0].scrollIntoView(false);", element)
         except (NoSuchElementException, TimeoutException):
             raise
         return element
