@@ -1,6 +1,8 @@
 import time
+import pytest
 
 from pages.loan_monthly import LoanMonthly
+from utils import csv_tool
 
 
 class TestLoanMonthly:
@@ -38,26 +40,45 @@ class TestLoanMonthly:
         loan_monthly.click_fee_info_button()
         assert loan_monthly.is_fee_popup_exist()
 
-    # 確認 多段利率輸入
+    # 測資：貸款金額、貸款期間、單一利率、相關費用、預期結果 預期結果：[貸款區間、每月還款金額、APR、本金、利息、本息]
+    # TODO: 轉換成 csv 檔
+    data_set = (
+        {
+            "amount": "100",
+            "period": "60",
+            "rate": "6",
+            "fee": "0",
+            "expected": ["第1~60月", "19,333", "6%", "1,000,000", "159,968", "1,159,968"],
+        },
+        {
+            "amount": "50",
+            "period": "60",
+            "rate": "6",
+            "fee": "0",
+            "expected": ["第1~60月", "9,666", "6%", "500,000", "79,989", "579,989"],
+        },
+    )
 
     # 確認 貸款利率試算結果
-    def test_calculate_monthly_repayment_amount(self, driver_class):
+    @pytest.mark.parametrize(
+        "rate_data_set", csv_tool.read_data_from_csv("rate_data_set")
+    )
+    def test_calculate_monthly_repayment_amount(self, driver_class, rate_data_set):
+        data = {
+            "amount": "100",
+            "period": "60",
+            "fee": "0",
+            "expected": ["第1~60月", "19,333", "6%", "1,000,000", "159,968", "1,159,968"],
+        }
         loan_monthly = LoanMonthly(driver_class)
 
-        # 測資：貸款金額、貸款期間、單一利率、相關費用、預期結果
-        data_set = ["100", "60", "6", "0"]
-        data_set = {"": ""}
-
-        # 預期結果：貸款區間、每月還款金額、APR、本金、利息、本息
-        expected = ["第1~60月", "19,333", "6%", "1,000,000", "159,968", "1,159,968"]
-
-        loan_monthly.fill_in_all_input(data_set)
-        time.sleep(2)
+        loan_monthly.fill_in_all_input(data, rate_data_set)
+        time.sleep(1)
         loan_monthly.click_calculate_btn()
-        time.sleep(2)
+        time.sleep(1)
         result = loan_monthly.get_result_value()
         time.sleep(1)
-        assert result == expected
+        assert result == data["expected"]
 
     # 確認 寄送 email
     def test_send_full_calculation_results_via_email(self, driver_class):

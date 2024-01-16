@@ -74,19 +74,19 @@ class LoanMonthly(Page):
     def is_fee_popup_exist(self):
         return self.wait_for_visible(self.FEE_INFO_POPUP)
 
-    def fill_in_all_input(self, data_set):
+    def fill_in_all_input(self, data, rate_data_set):
         # 輸入 貸款金額，必須先預設值清掉
         self.get_element_by(self.AMOUNT_INPUT).clear()
-        self.get_element_by(self.AMOUNT_INPUT).send_keys(data_set[0])
+        self.get_element_by(self.AMOUNT_INPUT).send_keys(data["amount"])
         # 輸入 貸款期間，必須先預設值清掉
         self.get_element_by(self.PERIOD_INPUT).clear()
-        self.get_element_by(self.PERIOD_INPUT).send_keys(data_set[1])
+        self.get_element_by(self.PERIOD_INPUT).send_keys(data["period"])
         # 輸入 利率，必須先預設值清掉
         self.get_element_by(self.RATE_ONE_INPUT).clear()
-        self.get_element_by(self.RATE_ONE_INPUT).send_keys(data_set[2])
+        self.get_element_by(self.RATE_ONE_INPUT).send_keys(rate_data_set)
         # 輸入 相關費用，必須先預設值清掉
         self.get_element_by(self.FEE_INPUT).clear()
-        self.get_element_by(self.FEE_INPUT).send_keys(data_set[3])
+        self.get_element_by(self.FEE_INPUT).send_keys(data["fee"])
 
     def click_calculate_btn(self):
         calculate_button = self.scroll_into_view(self.CALCULATE_BTN)
